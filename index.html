@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Will You Be My Valentine?</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: radial-gradient(circle at top, #ff9a9e, #fad0c4);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      color: #fff;
+      overflow: hidden;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.18);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+      position: relative;
+      width: 90%;
+      max-width: 420px;
+      backdrop-filter: blur(10px);
+    }
+    h1 {
+      margin-bottom: 10px;
+      animation: glow 2s infinite alternate;
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #fff; }
+      to { text-shadow: 0 0 25px #ffdde1; }
+    }
+    p { font-size: 18px; margin-bottom: 30px; }
+    button {
+      padding: 14px 28px;
+      font-size: 16px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+    }
+    #yesBtn { background-color: #4CAF50; color: white; }
+    #noBtn { background-color: #f44336; color: white; position: absolute; }
+    .success { display: none; font-size: 22px; margin-top: 20px; }
+    canvas#confetti { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; }
+
+    /* Floating hearts */
+    .heart {
+      position: fixed;
+      bottom: -20px;
+      color: #ff5e7e;
+      font-size: 20px;
+      animation: floatUp 6s linear infinite;
+      opacity: 0.8;
+    }
+    @keyframes floatUp {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(-110vh); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts"></div>
+  <div class="card">
+    <h1>Mehek ❤️</h1>
+    <p>Will you be my Valentine?</p>
+    <button id="yesBtn">Yes 💖</button>
+    <button id="noBtn">No 🙈</button>
+    <div class="success" id="successMsg">Yay! You just made me the happiest person 💕</div>
+    <audio id="loveSong" src="tauba-tumhare-yeh-ishaare.mp3"></audio>
+    <canvas id="confetti"></canvas>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  emailjs.init('YOUR_PUBLIC_KEY'); // EmailJS public key
+
+  const noBtn = document.getElementById('noBtn');
+  const yesBtn = document.getElementById('yesBtn');
+  const successMsg = document.getElementById('successMsg');
+
+  function moveNoButton() {
+    const card = document.querySelector('.card');
+    const rect = card.getBoundingClientRect();
+    const x = Math.random() * (rect.width - noBtn.offsetWidth);
+    const y = Math.random() * (rect.height - noBtn.offsetHeight);
+    noBtn.style.left = x + 'px';
+    noBtn.style.top = y + 'px';
+  }
+
+  noBtn.addEventListener('mouseover', moveNoButton);
+  noBtn.addEventListener('click', moveNoButton);
+
+  function startConfetti() {
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    canvas.width = innerWidth; canvas.height = innerHeight;
+    const pieces = Array.from({length:180}, () => ({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height,
+      r: Math.random()*6+4,
+      d: Math.random()*50,
+      c: `hsl(${Math.random()*360},100%,60%)`
+    }));
+    (function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(p=>{
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=p.c; ctx.fill(); p.y+=Math.cos(p.d)+2;
+        if(p.y>canvas.height) p.y=-10;
+      }); requestAnimationFrame(draw);
+    })();
+  }
+
+  function spawnHearts() {
+    setInterval(()=>{
+      const h = document.createElement('div');
+      h.className = 'heart'; h.innerHTML = '❤️';
+      h.style.left = Math.random()*100 + 'vw';
+      h.style.fontSize = Math.random()*20 + 16 + 'px';
+      document.body.appendChild(h);
+      setTimeout(()=>h.remove(),6000);
+    }, 400);
+  }
+
+  yesBtn.addEventListener('click', () => {
+    successMsg.style.display = 'block';
+    yesBtn.style.display = 'none';
+    noBtn.style.display = 'none';
+
+    document.getElementById('loveSong').play();
+    startConfetti();
+    spawnHearts();
+
+    emailjs.send('YOUR_SERVICE_ID','YOUR_TEMPLATE_ID',{
+      message: 'Mehek clicked YES to your Valentine proposal! ❤️',
+      to_email: 'mukundbhartiya@gmail.com'
+    });
+  });
+</script>
+</body>
+</html>
