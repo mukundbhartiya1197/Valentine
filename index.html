@@ -46,7 +46,7 @@
     #yesBtn { background-color: #4CAF50; color: white; }
     #noBtn { background-color: #f44336; color: white; position: absolute; }
     .success { display: none; font-size: 22px; margin-top: 20px; }
-    canvas#confetti { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; }
+    
 
     /* Floating hearts */
     .heart {
@@ -72,7 +72,7 @@
     <button id="noBtn">No 🙈</button>
     <div class="success" id="successMsg">Yay! You just made me the happiest person 💕</div>
     <audio id="loveSong" src="tauba-tumhare-yeh-ishaare.mp3"></audio>
-    <canvas id="confetti"></canvas>
+    <img src="us.jpg" alt="Mukund & Mehek" style="width:100%;border-radius:16px;margin:20px 0;box-shadow:0 10px 25px rgba(0,0,0,0.3);">
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
@@ -95,27 +95,7 @@
   noBtn.addEventListener('mouseover', moveNoButton);
   noBtn.addEventListener('click', moveNoButton);
 
-  function startConfetti() {
-    const canvas = document.getElementById('confetti');
-    const ctx = canvas.getContext('2d');
-    canvas.width = innerWidth; canvas.height = innerHeight;
-    const pieces = Array.from({length:180}, () => ({
-      x: Math.random()*canvas.width,
-      y: Math.random()*canvas.height,
-      r: Math.random()*6+4,
-      d: Math.random()*50,
-      c: `hsl(${Math.random()*360},100%,60%)`
-    }));
-    (function draw(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      pieces.forEach(p=>{
-        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-        ctx.fillStyle=p.c; ctx.fill(); p.y+=Math.cos(p.d)+2;
-        if(p.y>canvas.height) p.y=-10;
-      }); requestAnimationFrame(draw);
-    })();
-  }
-
+  
   function spawnHearts() {
     setInterval(()=>{
       const h = document.createElement('div');
@@ -133,7 +113,7 @@
     noBtn.style.display = 'none';
 
     document.getElementById('loveSong').play();
-    startConfetti();
+    
     spawnHearts();
 
     emailjs.send('YOUR_SERVICE_ID','YOUR_TEMPLATE_ID',{
@@ -144,3 +124,4 @@
 </script>
 </body>
 </html>
+
